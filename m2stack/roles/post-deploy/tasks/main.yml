@@ -1,0 +1,21 @@
+---
+# tasks file for post-deploy
+   - name: Setting Groups for Nginx
+     user: name=nginx groups={{ group }},{{ pma_group }} append=yes
+#     user: name=nginx groups={{ group }},{{ dev_group }},{{ pma_group }} append=yes
+
+   - name: Setting user to directory access
+     shell: usermod -m -d {{ webroot }}/{{ subdomain }}.{{ domain }}.{{ tld }} -s /bin/bash -U {{ user }} 
+#     shell: usermod -m -d {{ webroot }}/{{ dev_subdomain }}.{{ domain }}.{{ tld }} -s /bin/bash -U {{ dev_user }}
+
+   - name: Restarting PHP{{ php_version }}-FPM
+     service: name=php{{ php_version }}-fpm state=restarted
+
+   - name: Restarting Mysql
+     service: name=mysql state=restarted
+
+   - name: Restarting Nginx
+     service: name=nginx state=restarted
+
+   - name: Apt Update
+     shell: apt-get update

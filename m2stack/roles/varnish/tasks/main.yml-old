@@ -1,0 +1,29 @@
+---
+# tasks file for java & elasticsearch
+#   - name: Downloading varnish key
+#     shell: curl -s https://packagecloud.io/install/repositories/varnishcache/varnish{{ varnish_repo_version }}/script.deb.sh | sudo bash
+
+   - name: Adding viarnish signing key
+     shell: curl -L https://packagecloud.io/varnishcache/varnish{{ varnish_repo_version }}/gpgkey | sudo apt-key add -
+
+   - name: install debian-archive-keyring
+     apt:
+       name: debian-archive-keyring
+       state: present
+       update_cache: yes
+
+   - name: Adding varnish mainline deb
+     shell: echo "deb https://packagecloud.io/varnishcache/varnish{{ varnish_repo_version }}/ubuntu/ xenial main" > "/etc/apt/sources.list.d/varnishcache_varnish{{ varnish_repo_version }}.list"
+  
+   - name: Adding varnish mainline deb src
+     shell: echo "deb-src https://packagecloud.io/varnishcache/varnish{{ varnish_repo_version }}/ubuntu/ xenial main" >> "/etc/apt/sources.list.d/varnishcache_varnish{{ varnish_repo_version }}.list"
+
+   - name: Update APT
+     shell: apt-get update
+
+   - name: Install varnish
+     apt:
+       name: varnish={{ varnish_version }}
+
+   - name: Retarting varnish
+     service: name=varnish state=restarted

@@ -1,0 +1,50 @@
+---
+# tasks file for mysql
+   - name: Changing current directory
+     shell: cd /tmp/
+
+   - name: Downloading Percona Repo
+     shell: wget https://repo.percona.com/apt/percona-release_0.1-4.$(lsb_release -sc)_all.deb
+
+#   - name: Configuring repo
+#     shell: dpkg -i percona-release_0.1-4.$(lsb_release -sc)_all.deb
+
+#   - name: Updating APT
+#     shell: apt-get update
+
+#   - name: Copy the my.cnf
+#     copy: src=my.cnf dest=/root/.my.cnf owner=root mode=0600
+
+#   - name: Installing Percona MySQL Server
+#     apt: pkg={{item}} state=installed
+#     with_items:
+#       - percona-server-server-5.7
+#       - percona-server-client-5.7
+#       - percona-server-common-5.7
+#       - libmecab2
+#       - python-mysqldb
+
+   - name: Remove the MySQL test database
+     action: mysql_db db=test state=absent
+
+   - name: Create databases
+     mysql_db: name={{item}} state=present collation=utf8_general_ci encoding=utf8
+     with_items:
+       - "{{ database_prod }}"
+       - "{{ database_dev }}"
+
+   - name: Add Prod DB user and allow access to databases
+     mysql_user: name={{ mysql_prod_user }} password={{ mysql_prod_pass }} host="localhost" priv={{ database_prod }}.*:ALL,GRANT state=present
+
+   - name: Add Dev DB user and allow access to databases
+     mysql_user: name={{ mysql_dev_user }} password={{ mysql_dev_pass }} host="localhost" priv={{ database_dev }}.*:ALL,GRANT state=present
+
+   - name: Set root password
+     mysql_user: name=root password={{ mysql_root_pass }} host="{{item}}" priv=*.*:ALL,GRANT state=present
+     with_items:
+       - 127.0.0.1
+       - ::1
+       - localhost
+
+   - name: Restart the MySQL service
+     action: service name=mysql state=restarted

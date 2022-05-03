@@ -1,0 +1,16 @@
+---
+# tasks file for users
+#   - name: Coping user add template
+#     template: src=/etc/ansible/m2stack/roles/users/templates/useradd.sh.j2 dest=/tmp/useradd.sh
+
+   - name: Creating Directory
+     file: path={{ webroot }}/{{ dev_url }} state=directory #owner={{ user }} group={{ group }} mode=0755 recurse=yes
+
+   - name: Adding user
+     user: name={{ dev_user }} home={{ webroot }}/{{ dev_url }} createhome=no
+
+   - name: Setting Directory Ownership
+     file: path={{ webroot }}/{{ dev_url }} state=directory owner={{ dev_user }} group={{ dev_group }} mode=0755 recurse=yes
+
+   - name: Creating password for user
+     shell: bash /tmp/useradd.sh {{ dev_user }}

@@ -1,0 +1,14 @@
+---
+# tasks file for composer
+  - name: composer repo download
+    shell: curl -sS https://getcomposer.org/installer | php
+
+  - name: move composer directory
+    shell: mv composer.phar /usr/bin/composer
+
+  - name: give composer permission    
+    file: dest=/usr/bin/composer mode="u=rwx,g=rx,o=rx"
+
+  - name: composer version 1
+    shell: composer selfupdate --1
+    when: composer_version == 1 

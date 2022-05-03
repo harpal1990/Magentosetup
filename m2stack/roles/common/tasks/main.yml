@@ -1,0 +1,29 @@
+---
+   - name: Install common packages
+     apt:
+       update_cache: true
+       pkg:
+         - software-properties-common
+         - build-essential
+         - python3-software-properties
+         - python3-mysqldb
+         - apt-transport-https
+         - net-tools
+         - rsync
+         - git
+         - wget
+         - vim
+         - dialog
+         - zip
+         - unzip
+         - redis-server
+       state: present
+
+
+   - name: Setting up Locale
+     shell: locale-gen en_US.UTF-8
+   - name: Setting up Lang
+     shell: export LANG=en_US.UTF-8
+   - name: Setting up Lang
+     shell: export LANG=C.UTF-8
+  

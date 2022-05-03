@@ -1,0 +1,20 @@
+[pma.{{ domain }}.{{ tld }}]
+
+listen = '/var/run/php/pma.{{ domain }}.{{ tld }}.sock'
+listen.allowed_clients = 127.0.0.1
+listen.owner = nginx
+listen.group = nginx
+
+user = {{ pma_user }}
+group = {{ pma_group }}
+
+pm = dynamic
+pm.max_children = 100
+pm.start_servers = 5
+pm.min_spare_servers = 5
+pm.max_spare_servers = 20
+pm.max_requests = 500
+
+;request_terminate_timeout = 0
+;request_slowlog_timeout = 0
+

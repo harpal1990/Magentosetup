@@ -1,0 +1,17 @@
+upstream {{ subdomain }}-{{ domain }}-backend {
+        server unix:/var/run/php/{{ url }}.sock;
+}
+
+server {
+        listen 8080;
+        server_name {{ url }} {{ domain }}.{{ tld }};
+
+        set $MAGE_ROOT {{ webroot }}/{{ url }}/webroot;
+
+        include {{ webroot }}/{{ url }}/config/{{ url }}-nginx.conf;
+
+        access_log /var/log/nginx/{{ url }}-access.log;
+        error_log  /var/log/nginx/{{ url }}-error.log notice;
+
+}
+

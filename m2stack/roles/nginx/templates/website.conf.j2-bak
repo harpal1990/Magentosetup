@@ -1,0 +1,27 @@
+upstream {{ subdomain }}-{{ domain }}-backend {
+        server unix:/var/run/php/{{ url }}.sock;
+}
+
+server {
+	listen 80;
+	server_name {{ url }} {{ domain }}.{{ tld }};
+	return 301 https://{{ url }}$request_uri;
+}
+
+server {
+	listen 443 http2;
+	server_name {{ url }};
+
+	set $MAGE_ROOT /var/www/vhosts/{{ url }}/webroot;
+
+#	ssl on;
+#	ssl_certificate /etc/ssl/{{ url }}/{{ domain }}.{{ tld }}.crt;
+#	ssl_certificate_key /etc/ssl/{{ url }}/{{ domain }}.{{ tld }}.key;
+#	ssl_prefer_server_ciphers on;
+
+	include /var/www/vhosts/{{ url }}/config/{{ url }}-nginx.conf;
+
+        access_log /var/log/nginx/{{ url }}-access.log;
+        error_log  /var/log/nginx/{{ url }}-error.log notice;
+
+}

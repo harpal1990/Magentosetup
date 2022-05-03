@@ -1,0 +1,37 @@
+---
+# tasks file for nginx
+#   - name: Changing directory to tmp
+#     shell: cd /tmp/
+#   - name: Downloading nginx signing key
+#     shell: wget http://nginx.org/keys/nginx_signing.key
+#   - name: Adding nginx signing key
+#     shell: apt-key add nginx_signing.key
+#   - name: Adding nginx mainline deb
+#     shell: echo "deb http://nginx.org/packages/mainline/ubuntu/ xenial nginx" >> /etc/apt/sources.list.d/nginx.list
+#   - name: Adding nginx mainline deb src
+#     shell: echo "deb-src http://nginx.org/packages/mainline/ubuntu/ xenial nginx" >> /etc/apt/sources.list.d/nginx.list
+#   - name: Install Nginx
+#     apt: pkg=nginx state=present update_cache=true
+##     notify:
+##      - start nginx
+##   - name: Starting Nginx
+##     service: name=nginx state=started
+
+#   - name: Configuring Nginx Config file
+#     template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+
+   - name: Configuring Nginx config under conf.d for dev
+     template: src=dev_website.conf.j2 dest=/etc/nginx/conf.d/{{ dev_url }}.conf
+
+   - name: Creating Config Directory for dev
+     file: path={{ webroot }}/{{ dev_url }}/config state=directory owner={{ dev_user }} group={{ dev_group }} mode=0755 recurse=yes
+
+   - name: Creating Webroot Directory for dev
+     file: path={{ webroot }}/{{ dev_url }}/webroot state=directory owner={{ dev_user }} group={{ dev_group }} mode=0755 recurse=yes
+
+   - name: Configuring Nginx config under document root
+     template: src=dev_website-nginx.conf.j2 dest={{ webroot }}/{{ dev_url }}/config/{{ dev_url }}-nginx.conf owner={{ dev_user }} group={{ dev_group }} mode=0644
+
+   - name: Starting Nginx
+     service: name=nginx state=restarted
+

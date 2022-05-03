@@ -1,0 +1,18 @@
+---
+# tasks file for redis
+   - name: Install build essentials
+     apt:
+       update_cache: true
+       pkg:
+         - build-essential
+         - tcl8.5
+         - expect
+       state: present
+
+
+
+   - name: Copying Redis Script 
+     copy: src=/etc/ansible/m2stack-ubuntu1804/roles/redis/files/redis.sh dest=/tmp/redis.sh mode=0755
+
+   - name: Installing Redis and its dependencies
+     shell: sh /tmp/redis.sh

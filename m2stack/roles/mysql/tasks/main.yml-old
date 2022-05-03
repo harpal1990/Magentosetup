@@ -1,0 +1,55 @@
+---
+# tasks file for mysql
+   - name: Changing current directory
+     shell: cd /tmp/
+
+   - name: Downloading Percona Repo
+     shell: wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb
+
+   - name: Installing percona Repo
+     shell: dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
+
+   - name: Update APT
+     shell: apt-get update
+
+   - name: Set MySQL root password before installing
+     debconf: name='mysql-server' question='mysql-server/root_password' value='{{MySQL_root_pass | quote}}' vtype='password'
+
+   - name: Confirm MySQL root password before installing
+     debconf: name='mysql-server' question='mysql-server/root_password_again' value='{{MySQL_root_pass | quote}}' vtype='password'
+
+   - name: Install Percona MySQL
+     apt: package={{ item }} state=present force=yes update_cache=yes cache_valid_time=3600
+     with_items:
+        - percona-server-server-5.7
+        - percona-server-client-5.7
+        - percona-server-common-5.7
+        - libmecab2
+#        - python-mysqldb
+
+   - name: Deletes anonymous MySQL server user for localhost
+     mysql_user: user="" state=absent login_password= {{ MySQL_root_pass }} login_user=root
+
+   - name: Secures the MySQL root user
+     mysql_user: user=root password= {{ MySQL_root_pass }} host= {{ item }} login_password= {{MySQL_root_pass}} login_user=root
+     with_items:
+       - 127.0.0.1
+       - localhost
+       - ::1
+   - name: Removes the MySQL test database
+     mysql_db: db=test state=absent login_password= {{ MySQL_root_pass }} login_user=root
+
+   - name: Create databases
+     mysql_db: name={{item}} state=present collation=utf8_general_ci encoding=utf8
+     with_items:
+       - "{{ database_prod }}"
+#       - "{{ database_dev }}"
+
+   - name: Add Prod DB user and allow access to databases
+     mysql_user: name={{ mysql_prod_user }} password={{ mysql_prod_pass }} host="localhost" priv={{ database_prod }}.*:ALL,GRANT state=present
+
+#   - name: Add Dev DB user and allow access to databases
+#     mysql_user: name={{ mysql_dev_user }} password={{ mysql_dev_pass }} host="localhost" priv={{ database_dev }}.*:ALL,GRANT state=present
+
+   - name: Restart the MySQL service
+     action: service name=mysql state=restarted

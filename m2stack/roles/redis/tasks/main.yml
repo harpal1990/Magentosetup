@@ -1,0 +1,16 @@
+---
+# tasks file for redis
+  - apt_repository:
+      repo: ppa:redislabs/redis
+
+  - name: Update APT
+    shell: apt-get update
+
+  - name: Install redis
+    apt:
+      name: redis
+       #  - name: Install redis
+       #    shell: apt-get install redis
+
+  - name: Ensure Redis is started
+    service: name=redis-server state=started enabled=yes

@@ -1,0 +1,39 @@
+---
+# This playbook deploys the whole technological stack in the instance.
+
+##############################################
+
+## Default parameters
+- name: apply common configuration to all nodes
+  hosts: all
+  remote_user: root
+  vars_files:
+  - roles/group_vars/vars/main.yml
+
+
+# Sudo User specific parameters
+#- name: apply common configuration to all nodes
+#  hosts: all
+#  user: ubuntu
+#  become: yes
+#  vars_files:
+#  - roles/group_vars/vars/main.yml
+
+##############################################
+
+  roles:
+    - common
+    - users
+#    - users-dev
+    - nginx
+#    - nginx-dev
+    - php7x
+#    - php7x-dev
+    - mysql
+    - elastisearch
+    - phpmyadmin
+#    - varnish
+#    - redis
+    - composer
+    - post-deploy
+#- include: roles/nginx/handlers/handlers.yml

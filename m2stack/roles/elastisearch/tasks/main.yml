@@ -1,0 +1,27 @@
+---
+# tasks file for Java and ELasticsearch
+#   - name: install java 
+#     apt: 
+#       name: openjdk-{{ jdk_version }}-jdk
+#       state: present
+#       update_cache: yes
+
+  - name: Download ElasticSearch {{ elasticsearch_version }} package
+    get_url:
+      url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ elasticsearch_version }}-amd64.deb
+      dest: /tmp/elasticsearch-{{ elasticsearch_version }}-amd64.deb
+
+  - name: Installing Elasticsearch
+    shell: dpkg -i /tmp/elasticsearch-{{ elasticsearch_version }}-amd64.deb
+
+  - name: Enable & Start Elasticsearch
+    ansible.builtin.systemd:
+      name: elasticsearch.service
+      state: started
+      enabled: yes
+
+  - name: Ensure elasticsearch is running
+    systemd: state=started name=elasticsearch
+
+  - name: Restarting elasticsearch
+    service: name=elasticsearch state=restarted

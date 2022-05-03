@@ -1,0 +1,21 @@
+upstream {{ dev_subdomain }}-{{ domain }}-backend {
+        server unix:/var/run/php/{{ dev_url }}.sock;
+}
+
+server {
+        listen 80;
+        server_name {{ dev_url }}; # Change server name based on domain
+
+        set $MAGE_ROOT /var/www/vhosts/{{ dev_url }}/webroot; # Change Magento2 root
+        set $MAGE_MODE default; # Change Magneto2 Mode if needed
+
+	include /var/www/vhosts/{{ dev_url }}/config/{{ dev_url }}-nginx.conf;
+
+        access_log /var/log/nginx/{{ dev_url }}-access.log;
+        error_log  /var/log/nginx/{{ dev_url }}-error.log notice;
+
+}
+
+#error_log syslog:server=graylog.krishtechnolabs.net:12202 debug;
+#access_log syslog:server=graylog.krishtechnolabs.net:12201,facility=local7,tag=nginx,severity=debug;
+

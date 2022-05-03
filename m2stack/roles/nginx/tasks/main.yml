@@ -1,0 +1,46 @@
+---
+# tasks file for nginx
+   - name: Changing directory to tmp
+     shell: cd /tmp/
+   - name: Downloading nginx signing key
+     shell: wget http://nginx.org/keys/nginx_signing.key
+   - name: Adding nginx signing key
+     shell: apt-key add nginx_signing.key
+   - name: Adding nginx mainline deb
+     shell: echo "deb http://nginx.org/packages/mainline/ubuntu/ `lsb_release -cs` nginx" >> /etc/apt/sources.list.d/nginx.list
+   - name: Adding nginx mainline deb src
+     shell: echo "deb-src http://nginx.org/packages/mainline/ubuntu/ `lsb_release -cs` nginx" >> /etc/apt/sources.list.d/nginx.list
+   - name: Install Nginx
+     apt: pkg=nginx state=present update_cache=true
+#     notify:
+#      - start nginx
+#   - name: Starting Nginx
+#     service: name=nginx state=started
+
+   - name: Configuring Nginx Config file
+     template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+
+   - name: Configuring Nginx config under conf.d for prod
+     template: src=website.conf.j2 dest=/etc/nginx/conf.d/{{ url }}.conf
+
+   - name: Configuring wan-proxy under conf.d for prod
+     template: src=wan-proxy.conf.j2 dest=/etc/nginx/conf.d/wan-proxy.conf
+
+   - name: Configuring magento2-cors under /etc/nginx
+     template: src=magento2-cors.conf.j2 dest=/etc/nginx/magento2-cors.conf
+
+   - name: Remove default.conf
+     shell: rm -rf /etc/nginx/conf.d/default.conf
+
+   - name: Creating Config Directory for prod
+     file: path={{ webroot }}/{{ url }}/config state=directory owner={{ user }} group={{ group }} mode=0755 recurse=yes
+
+   - name: Creating Webroot Directory for prod
+     file: path={{ webroot }}/{{ url }}/webroot state=directory owner={{ user }} group={{ group }} mode=0755 recurse=yes
+
+   - name: Configuring Nginx config under document root
+     template: src=website-nginx.conf.j2 dest={{ webroot }}/{{ url }}/config/{{ url }}-nginx.conf owner={{ user }} group={{ group }} mode=0644
+
+   - name: Starting Nginx
+     service: name=nginx state=started
+

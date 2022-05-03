@@ -1,0 +1,37 @@
+---
+# tasks file for phpmyadmin
+   - name: Changing directory
+     shell: cd /root/
+
+   - name: Downloading PHPMyAdmin Package
+     shell: wget https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.zip
+
+   - name: Extracting Package
+     shell: unzip phpMyAdmin-5.0.2-all-languages.zip
+
+   - name: Renaming Extracted Package
+     shell: mv /root/phpMyAdmin-5.0.2-all-languages {{ webroot }}/pma.{{ domain }}.{{ tld }}
+#     shell: mv /tmp/phpMyAdmin-5.0.2-all-languages {{ webroot }}/pma.{{ domain }}.{{ tld }}
+
+   - name: Removing ZIP package
+     shell: rm -rf phpMyAdmin-5.0.2-all-languages.zip
+
+   - name: Adding PHPMyAdmin user
+     user: name={{ pma_user }} home={{ webroot }}/pma.{{ domain }}.{{ tld }} createhome=no
+
+   - name: Creating password for user
+     shell: bash /tmp/useradd.sh {{ pma_user }}
+
+   - name: Creating sock file for PHPMYADMIN
+#     template: src=/etc/ansible/m2stack-ubuntu1804/roles/phpmyadmin/templates/domain.conf.j2 dest=/etc/php/7.1/fpm/pool.d/pma.{{ domain }}.{{ tld }}.conf
+     template: src=templates/domain.conf.j2 dest=/etc/php/{{ php_version }}/fpm/pool.d/pma.{{ domain }}.{{ tld }}.conf
+
+   - name: Changing ownership to www-data
+     shell: chown -R {{ pma_user }}:{{ pma_user }} {{ webroot }}/pma.{{ domain }}.{{ tld }}
+
+   - name: Renaming config file
+     shell: cp {{ webroot }}/pma.{{ domain }}.{{ tld }}/config.sample.inc.php {{ webroot }}/pma.{{ domain }}.{{ tld }}/config.inc.php
+
+   - name: Configuring PHPMyAdmin config file
+#     template: src=/etc/ansible/m2stack-ubuntu1804/roles/phpmyadmin/templates/pma.conf.j2 dest=/etc/nginx/conf.d/pma.{{ domain }}.{{ tld }}.conf 
+     template: src=templates/pma.conf.j2 dest=/etc/nginx/conf.d/pma.{{ domain }}.{{ tld }}.conf 

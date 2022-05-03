@@ -1,0 +1,7 @@
+# tasks file for varnish
+   - name: Install varnish
+     apt:
+       name: varnish
+
+   - name: Retarting varnish
+     service: name=varnish state=restarted

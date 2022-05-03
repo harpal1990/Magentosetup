@@ -1,0 +1,37 @@
+#!/bin/sh
+#if [ $# -ne 1 ]
+#        then echo "usage: $0 <username>"
+#        exit 1
+#fi
+
+HOST=`/bin/hostname`
+USER=$1
+ME=`/usr/bin/whoami`
+
+if [ $ME != root ]
+        then echo "Run this script under sudo or root user"
+        exit 2
+fi
+
+randpass () {
+
+MATRIX="0123456789ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+# ==> Password will consist of alphanumeric characters.
+LENGTH="12"
+
+while [ "${n:=1}" -le "$LENGTH" ]
+do
+        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
+        let n+=1
+done
+
+}
+
+create_pass() {
+        randpass
+        echo "creating Password for $USER"
+        echo $USER:$PASS | chpasswd
+        echo "$USER:$PASS" >> /root/credentials.txt
+}
+
+create_pass

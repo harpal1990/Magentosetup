@@ -1,0 +1,32 @@
+---
+# vars file for nginx
+domain: casio-mea
+subdomain: alpha
+#dev_subdomain: dev
+url: alpha.casio-mea.com
+#dev_url: uat.blossomcostumes.com.au
+tld: com
+user: live_casio
+group: live_casio
+#dev_user: uat_blossomcostumes
+#dev_group: uat_blossomcostumes
+#webroot: /opt/magento/vhosts
+webroot: /var/www/vhosts
+php_version: 7.3
+percona_version: ps80
+database_prod: casio22mea
+#database_dev: dev
+mysql_prod_user: prod-user
+#mysql_dev_user: dev-user
+mysql_prod_pass: 3TStrhGvvBUQzC3X
+#mysql_dev_pass: asd
+MySQL_root_pass: KMUtVQBDJDVTT7mK
+pma_user: pma_{{ domain }}
+pma_group: pma_{{ domain }}
+varnish_repo_version: 63
+varnish_version: 6.3.2
+jdk_version: 11
+#elastic_repo_version: 7.x
+elasticsearch_version: 7.6.0
+composer_version: 2
+sudo_user: root

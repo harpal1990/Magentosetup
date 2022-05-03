@@ -1,0 +1,4 @@
+---
+# tasks file for php7x-dev
+  - name: Setting up domain.conf in pool.d
+    template: src=dev_domain.conf.j2 dest=/etc/php/{{ php_version }}/fpm/pool.d/{{ dev_url }}.conf

@@ -1,0 +1,18 @@
+---
+# defaults file for php7x
+php_modules:
+  - fpm
+  - mysql
+  - cli
+  - common
+  - json
+  - opcache
+  - gd
+  - intl
+  - curl
+  - mbstring
+  - zip
+  - xml
+  - soap
+  - bcmath
+  - dev
